@@ -1,16 +1,22 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { addVote } from '../reducers/anecdoteReducer';
-import { addMessage } from '../reducers/notificationReducer'
+import { addNewVote } from '../reducers/anecdoteReducer';
+import { setMessage, clearMessage } from '../reducers/notificationReducer';
 
 function AnecdoteList() {
-  const anecdotes = useSelector(state => state.anecdotes);
+  const anecdotes = useSelector(({anecdotes, filter}) => {
+    return filter
+    ? anecdotes.filter(el => el.content.includes(filter))
+    : anecdotes
+  });
   const dispatch = useDispatch();
-  const anecdotesSort = anecdotes.slice().sort((a, b) => b.votes - a.votes)
+  const anecdotesSort = anecdotes.slice().sort((a, b) => b.votes - a.votes);
 
   const vote = (id) => {
-    dispatch(addVote(id));
-    dispatch(addMessage(`Vote ${id}`))
-    setTimeout(() => dispatch(addMessage(null)), 5000)
+    const findVote = anecdotesSort.find(el => el.id === id)
+    const newObj = {...findVote, votes: findVote.votes + 1}
+    dispatch(addNewVote(id, newObj))
+      dispatch(setMessage(`Vote ${id}`))
+      setTimeout(() => dispatch(clearMessage()), 5000)
   };
 
   return (

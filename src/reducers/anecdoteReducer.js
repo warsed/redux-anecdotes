@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getAll, createNew, changeVote } from '../services/anecdotes';
 
+/*
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -12,31 +14,26 @@ const anecdotesAtStart = [
 const getId = () => (100000 * Math.random()).toFixed(0);
 
 const initialState = anecdotesAtStart.map((el) => ({ content: el, votes: 0, id: getId() }));
+*/
 
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
-  initialState,
+  initialState: [],
   reducers: {
     addAnecdote(state, action) {
       const content = action.payload
-      state.push({
-          content: content,
-          votes: 0,
-          id: getId(),
-      })
+      state.push(content)
     },
     addVote(state, action) {
-      const id = action.payload
+      const id = action.payload.id
       const toFind = state.find((el) => el.id === id);
       const toChange = { ...toFind, votes: toFind.votes + 1 };
       return state.map((el) => (el.id !== toChange.id ? el : toChange));
     },
-    filterAnecdote(state, action) {
-      const value = action.payload
-      return state.filter(el => el.content.includes(value))
+    setAnecdote(state, action) {
+      return action.payload
     }
   }
-
 })
 
 /*
@@ -70,5 +67,27 @@ const reducer = (state = initialState, action) => {
 };
 */
 
-export const {addAnecdote, addVote, filterAnecdote} = anecdoteSlice.actions;
+const {addAnecdote, addVote, setAnecdote} = anecdoteSlice.actions;
+
+export const initializeAnecdote = () => {
+  return async dispatch => {
+    const result = await getAll()
+    dispatch(setAnecdote(result))
+  }
+}
+
+export const createNewAnecdote = content => {
+  return async dispatch => {
+    const result = await createNew(content)
+    dispatch(addAnecdote(result))
+  }
+}
+
+export const addNewVote = (id, object) => {
+  return async dispatch => {
+    const result = await changeVote(id, object)
+    dispatch(addVote(result))
+  }
+}
+
 export default anecdoteSlice.reducer

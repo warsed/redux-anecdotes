@@ -10,11 +10,9 @@ function Notification() {
   };
   return (
     message ?
-
     <div style={style}>
       {message}
     </div>
-
     : null
   );
 }

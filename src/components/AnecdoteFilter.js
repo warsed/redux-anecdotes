@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux/es/exports"
-import { filterAnecdote } from "../reducers/anecdoteReducer"
+import { addValue } from "../reducers/filterReducer"
 
 const Filter = () => {
     const dispatch = useDispatch()
 
     const handleFilter = (e) => {
         const value = e.target.value
-        dispatch(filterAnecdote(value))
+        dispatch(addValue(value))
     }
 
     return (
